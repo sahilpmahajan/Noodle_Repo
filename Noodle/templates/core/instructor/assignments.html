@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Assignments{% endblock %}
+
+
+{% block content %}
+
+ <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
+
+       
+            {% if request.user.is_authenticated and request.user.role == 'instructor' %}
+                {% for foo in assignment %}
+                    <h3><strong> {{ foo.title }}  </strong></h3>
+                    <hr/>
+                    <p> <h4><strong>Content:</strong></h4> {{ foo.content }} </p>
+
+                    <p> <h4><strong>Marks:</strong>  {{ foo.marks }} </h4> </p>
+
+                    <p> <h4><strong>Time:</strong> {{ foo.duration }} hours </h4></p>
+                    
+            <a href="{% url 'core:delete-assignment' foo.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Delete Assignment</button></a>
+                   
+                    <hr/>
+                    <hr/>
+                    <br/>
+                {% endfor %}
+                
+
+            <a href="{% url 'core:assignment-create' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Create Assignment</button></a>
+
+
+
+            {% else %}
+
+
+                {% for foo in assignment %}
+                    <h3><strong> {{ foo.title }}  </strong></h3>
+                    <hr/>
+                    <p> <h4>Content</h4> {{ foo.content }} </p>
+                    <br/>
+                    <p> <h4>Marks</h4> {{ foo.marks }} </p>
+
+                    <p> <h4>Time</h4> {{ foo.duration }} hours </p>
+                    <br/>
+                    
+                    
+ <a href="{% url 'core:assignment-submission' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submit Assignment</button></a>
+             
+                  <hr/>
+                {% endfor %}
+<a href="{% url 'core:submitted-assignment' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submitted Assignments</button></a>
+                
+                    <br/>
+                <hr/>
+
+
+            {% endif %}
+            <br/>
+
+
+    </div>
+
+{% endblock %}

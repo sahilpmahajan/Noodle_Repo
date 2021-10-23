@@ -1,0 +1,29 @@
+Commands used for GIT Sub Task 2
+
+git log -p : To check commit history and find out in which commit the creds.env was added
+
+commit X is the commit where creds.env was added
+
+git status : To find the state of the working directory and the staging area
+
+git branch rmcred c3d190f9e6ecf81f4c4cfeb90f87ba1b9c7244a5 : To create branch at commit before commit X
+
+git checkout rmcred : navigate to new branch 
+
+git restore --source=7bd067dfb2f21841ff809b82fffae839003a2b62 README.md : To restore the file README.md from commit X
+
+gedit .gitignore : Create and edit .gitignore file
+
+git add README.md .gitignore : Add the two files to staging area
+
+git commit -m "Made changes in branch-restoring" : To commit the staging area files
+
+git rebase --onto 10600d6ece82e0af07e2298c768a6a8e87f71a0f 7bd067dfb2f21841ff809b82fffae839003a2b62 : To rebase the master branch from the commit X onto the newly created commit.
+
+git reflog expire --expire-unreachable=now --all : to remove dangling(unreachable) commits from reflog. Reflogs are a convenient way to find out what destructive (and other) operations were performed on a branch (or HEAD), making it easier to undo a destructive operation. So we also have to remove the reflogs to actually remove everything not reachable from a branch. We do so by expiring --all reflogs. Again git keeps a bit of the reflogs to protect users so we again have to tell it not to do so: --expire-unreachable=now. 
+
+git gc --prune=now : removes unreachable objects. Unreachable objects that are younger than two weeks are not removed so we use --prune=now which means "remove unreachable objects that were created before now".
+
+git log --reflog : see reflogs
+
+git branch -d rmcred : delete the new branch created

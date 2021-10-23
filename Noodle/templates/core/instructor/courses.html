@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Courses{% endblock %}
+
+
+{% block content %}
+
+<div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+
+
+
+
+        <!-- Section Heading -->
+
+          <div class="section-heading text-center">
+      
+            <h2 class="w3-wide w3-center">{{ request.user.first_name }}'s Courses</h2>
+            <div class="line"></div>
+          </div>
+        </div>
+
+
+      <div class="row">
+          {% for course in course %}
+        <!-- Single Dentist Area -->
+        <div class="col-12 col-sm-6 col-md-4">
+
+          <div class="single-dentist-area mb-100">
+            <!-- Dentist Content -->
+            <div class="dentist-content">
+              <!-- Social Info -->
+              <div class="dentist-social-info">
+
+              </div>
+              <!-- Dentist Info -->
+              <div class="dentist-info bg-gradient-overlay">
+                  <h5>{{ course.course_name }}</h5>
+                    
+                  <a href="{% url 'core:course-view' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Course</button></a>
+                 <p>{{ course.teacher_name }} </p>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+
+    </div>
+
+{% endblock %}

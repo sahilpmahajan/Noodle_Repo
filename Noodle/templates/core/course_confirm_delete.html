@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Delete{% endblock %}
+
+{% block content %}
+
+
+
+<div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+
+            <div class="col-lg-5 mb-5 mb-lg-0">
+             
+                    <h4 class="w3-wide w3-center">Are you sure you want to delete this Course?</h4>
+
+            
+                <form method="post" enctype="multipart/form-data">{% csrf_token %}
+
+
+                      <h3>{{ object.course_name }}</h3>
+                      <h4>{{ object.course_description }}</h4>
+                    </br>
+                    </br>
+                   <div class="w3-row-padding" style="margin:0 -16px 8px -16px">
+                <button class="w3-button w3-black w3-section w3-right" type="submit">Delete</button>
+            </div>
+
+
+                </form>
+                </br>
+
+            </div>
+        </div>
+
+
+
+{% endblock %}

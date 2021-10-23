@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Courses{% endblock %}
+
+
+{% block content %}
+
+
+
+<div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+
+ <h2 class="w3-wide w3-center">{{ course.course_name }}</h2>
+                <hr/>
+                <h4> <strong>Instructor :</strong> {{ course.teacher_name }} </h4>
+                        <br/>
+                <p> <h4>About Instructor </h4>{{ course.teacher_details }} </p>
+                        
+                <p> <h4>About Course </h4>{{ course.course_description }} </p>
+
+                        <br/>
+                <a href="{% url 'core:assignment-list' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Assignments</button></a>
+                        <br/>
+                <p>  <h4>Course Duration </h4>{{ course.created_at }} - {{ course.end_date }} </p>
+
+                <a href="{% url 'core:delete-course' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Delete Course</button></a>
+        </div>
+
+
+
+{% endblock %}

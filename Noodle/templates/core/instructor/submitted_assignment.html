@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Submitted Assignment{% endblock %}
+
+
+{% block content %}
+
+
+<div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+     <h2 class="w3-wide w3-center">Submitted Assignments</h2>
+
+        <hr/>
+            {% for foo in assignment_submission %}
+
+
+                <p> <h4>Name</h4> {{ foo.name }} </p>
+
+                <p> <h4>Id</h4> {{ foo.university_id }} </p>
+                <hr/>
+                <p> <h4>Answer</h4> {{ foo.content }}  </p>
+                {% if foo.file %}
+                <p> <h4>Submitted File</h4> <a href="{{foo.file.url}}" download>{{foo.file}}</a> </p>
+                {% endif %}
+                {% if foo.feedback %}
+                <p> <h4>Feedback</h4> {{ foo.feedback }}  </p>
+                {% endif %}
+                <hr/>
+            {% endfor %}       
+    </div>
+
+
+{% endblock %}

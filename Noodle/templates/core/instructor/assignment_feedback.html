@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Assignment Feedback{% endblock %}
+
+
+{% block content %}
+
+    
+   <div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+    <h2 class="w3-wide w3-center">Give Feedback</h2>
+                    <div class="w3-row w3-padding-32">
+                      
+                              <br/>
+                             <form action="" method="POST">{% csrf_token %}
+                                {{ form.as_p }} 
+                                <input type="submit" value="Save"> 
+                                  
+                                </form> 
+                    </div>
+    
+                </div>
+
+    
+
+
+{% endblock %}
