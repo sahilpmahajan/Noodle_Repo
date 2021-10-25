@@ -1,4 +1,4 @@
- {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% load bootstrap %}
 
@@ -6,28 +6,29 @@
 
 {% block content %}
 
+    <section class="dentist-area section-padding-40-0">
+<div class="container">
 
-<div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
-<h2 class="w3-wide w3-center">Submit Assignment</h2>
-                 <div class="w3-row w3-padding-32">
+<div class="row justify-content-center">
+
+                <div class="col-lg-5 mb-5 mb-lg-0">
+                    <center> <h3> Submit Assignment </h3></center>
                           <br/>
-                     <form action="" method="POST">{% csrf_token %}
+                    <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
 
                         {{ form|bootstrap }}
 
-                      
-                         <div class="w3-row-padding" style="margin:0 -16px 8px -16px">
-                            <input type="submit" value="Submit" class="btn btn-primary btn-md text-white">
-                <button class="w3-button w3-black w3-section w3-right" type="submit">Submit</button>
-            </div>
-                              
-            
-                
+                        <div class="row form-group">
+                            <div class="col-md-12">
+                                <input type="submit" value="Submit" class="btn btn-primary btn-md text-white">
+                            </div>
+                        </div>
 
                     </form>
                 </div>
 
             </div>
-
+        </div>
+    </section>
 
 {% endblock %}
