@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.generic import CreateView, FormView, RedirectView, UpdateView
 from django.http import Http404
+from django.core.mail import send_mail
+from django.conf import settings
 
 from .forms import *
 from .models import User
@@ -13,6 +15,7 @@ from django.urls import reverse_lazy
 from .decorators import user_is_student, user_is_instructor
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+
 
 
 # STUDENT REGISTRATION VIEW
@@ -40,9 +43,18 @@ class RegisterStudentView(CreateView):
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
+            #send email if valid registeration, recipient_list mein put email of the user who just registered
+            subject = 'Thank you for registering to our site'
+            message = ' It is a decent site.'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = ['soumyasinghdahiya2001@gmail.com',]
+            send_mail( subject, message, email_from, recipient_list )       
+
             return redirect('authentication:login')
         else:
             return render(request, 'authentication/student/register.html', {'form': form})
+            
+        
 
 
 # STUDENT PROFILE EDIT VIEW

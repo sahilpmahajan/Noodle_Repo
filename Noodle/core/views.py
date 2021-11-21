@@ -4,6 +4,8 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from authentication.decorators import user_is_instructor, user_is_student
+from django.core.mail import send_mail
+from django.conf import settings
 
 from .forms import CourseCreateForm, AssignmentCreateForm, AssignmentSubmissionForm
 from .models import Course, Assignment, AssignmentSubmission
