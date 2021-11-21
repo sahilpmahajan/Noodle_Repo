@@ -7,6 +7,7 @@ app_name = "authentication"
 
 urlpatterns = [
     path('student/register', RegisterStudentView.as_view(), name='student-register'),
+    path('activate-user/<uidb64>/<token>', views.activate_account, name='activate'),
     path('student/profile/update/', EditStudentProfileView.as_view(), name='student-profile-update'),
     path('student/profile/changepassword/', views.student_change_password, name='student-change-password'),
     path('instructor/profile/changepassword/', views.instructor_change_password, name='instructor-change-password'),

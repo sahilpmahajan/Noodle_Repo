@@ -1,5 +1,7 @@
+from django.http import HttpResponse
 from django.contrib import messages, auth
 from django.contrib.auth import update_session_auth_hash
+from django.core.mail.message import EmailMessage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import PasswordChangeForm
@@ -7,7 +9,14 @@ from django.views.generic import CreateView, FormView, RedirectView, UpdateView
 from django.http import Http404
 from django.core.mail import send_mail
 from django.conf import settings
-
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives
+from django.contrib import messages
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.template.loader import render_to_string
+from .tokens import account_activation_token
 from .forms import *
 from .models import User
 
@@ -15,12 +24,30 @@ from django.urls import reverse_lazy
 from .decorators import user_is_student, user_is_instructor
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 
+#ACTIVATE ACCOUNT
+def activate_account(request, uidb64, token):
+    try:
+        uid = force_bytes(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        return HttpResponse('Your account has been activated successfully')
+    else:
+        return HttpResponse('Activation link is invalid!')
 
 
 # STUDENT REGISTRATION VIEW
 class RegisterStudentView(CreateView):
-    model = User
+    model=User
     form_class = StudentRegistrationForm
     template_name = 'authentication/student/register.html'
     success_url = '/'
@@ -40,15 +67,28 @@ class RegisterStudentView(CreateView):
 
         if form.is_valid():
             user = form.save(commit=False)
+            user.is_active = False # Deactivate account till it is confirmed
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
+            current_site = get_current_site(request)
+            email_subject = 'Activate Your Account'
+            message = render_to_string('emails/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(email_subject, message, to = [to_email])
+            email.send()
+            messages.success(request, ('Please Confirm your email to complete registration.'))
             #send email if valid registeration, recipient_list mein put email of the user who just registered
-            subject = 'Thank you for registering to our site'
-            message = ' It is a decent site.'
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = ['soumyasinghdahiya2001@gmail.com',]
-            send_mail( subject, message, email_from, recipient_list )       
+            #subject = 'Thank you for registering to our site'
+            #message = ' It is a decent site.'
+            #email_from = settings.EMAIL_HOST_USER
+            #recipient_list = ['soumyasinghdahiya2001@gmail.com',]
+            #send_mail( subject, message, email_from, recipient_list )       
 
             return redirect('authentication:login')
         else:
@@ -111,6 +151,19 @@ class RegisterInstructorView(CreateView):
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
+            #added new
+            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+            ##############################3
+            htmly = get_template('authentication/instructor/email.html')
+            d = { 'username': username }
+            subject, from_email, to = 'welcome', 'yashdahiya2002@gmail.com', email
+            html_content = htmly.render(d)
+            msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            ########################################
+            messages.success(request, f'Your account has been created! You should now be able to log in.')
             return redirect('authentication:login')
         else:
             return render(request, 'authentication/instructor/register.html', {'form': form})

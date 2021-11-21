@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,3 +142,5 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'yashdahiya2002@gmail.com' 
 EMAIL_HOST_PASSWORD = 'kcce115209'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
