@@ -9,21 +9,14 @@ function scrolltoend() {
     }, 800);
 }
 
-async function send(sender, receiver, message) {
-    var res = await axios({
-      method: "POST",
-      url: "/api/messages",
-      data: {
-        sender,
-        receiver,
-        message
-      }
+function send(sender, receiver, message) {
+    $.post('/api/messages/', '{"sender": "'+ sender +'", "receiver": "'+ receiver +'","message": "'+ message +'" }', function (data) {
+        console.log(data);
+        var box = text_box.replace('{sender}', "You");
+        box = box.replace('{message}', message);
+        $('#board').append(box);
+        scrolltoend();
     })
-    console.log(res.data)
-    var box = text_box.replace('{sender}', "You")
-  box = box.replace('{message}', message)
-  $('#board').append(box)
-  scrolltoend()
 }
 
 function receive() {
