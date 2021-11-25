@@ -15,7 +15,7 @@
 
 {% if request.user.is_authenticated and request.user.role == 'instructor' %}
 
-
+<a href="{% url 'chat:chats' %}" class="w3-bar-item w3-button w3-padding-large">Chat</a>
 <div class="w3-dropdown-hover w3-hide-small">
 <button class="w3-padding-large w3-button" title="More">{{ request.user.first_name }}<i class="fa fa-caret-down"></i></button>
 <div class="w3-dropdown-content w3-bar-block w3-card-4">
@@ -32,6 +32,7 @@
 
 
              {% elif request.user.is_authenticated and request.user.role == 'student' %}
+             <a href="{% url 'chat:chats' %}" class="w3-bar-item w3-button w3-padding-large">Chat</a>
              <a href="{% url 'core:course' %}" class="w3-bar-item w3-button w3-padding-large">Courses</a>
              <div class="w3-dropdown-hover w3-hide-small">
                 <button class="w3-padding-large w3-button" title="More">{{ request.user.first_name }}<i class="fa fa-caret-down"></i></button>

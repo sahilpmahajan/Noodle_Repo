@@ -32,6 +32,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'chat',
+    'widget_tweaks',
+    'rest_framework',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -91,12 +94,8 @@ WSGI_APPLICATION = 'lab_exam.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'noodledb',
-        'USER': 'noodle',
-        'PASSWORD': 'noodle123',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': str(BASE_DIR / 'db.sqlite3'),
     }
 }
 

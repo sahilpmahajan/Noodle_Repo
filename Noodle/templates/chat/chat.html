@@ -1,0 +1,76 @@
+{% extends 'chat/index.html' %}
+{% block title %}Chat{% endblock %}
+{% block content %}
+{% block body %}
+<nav class="black lighten-3">
+    <div class="nav-wrapper container">
+      <a href="#" class="brand-logo">Private Messaging</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="" class="w3-bar-item w3-button">{{ request.user.first_name }}</a></li>
+          <li><a href="/" class="w3-bar-item w3-button">Home</a></li>
+          <li><a href="{% url 'core:course' %}" class="w3-bar-item w3-button">Courses</a></li>
+
+      </ul>
+    </div>
+</nav>
+    <div class="section" style="height: 80vh">
+    <div class="row">
+        <div class="col s3">
+        <div class="card">
+            <div class="collection">
+                {% for user in users %}
+                <a href="{% url 'chat:chat' request.user.id user.id %}" id="user{{ user.id }}" class="collection-item row">
+                    <img src="https://frontend-1.adjust.com/new-assets/images/site-images/interface/user.svg" class="col s4">
+                    <div class="col s8">
+                    <span class="title" style="font-weight: bolder">{{ user.first_name }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        </div>
+        <div class="col s9">
+            <div class="card">
+            <div id="board" class="section grey lighten-3" style="height: 68vh; padding: 5px; overflow-y: scroll">
+                {% block messages %}
+
+                {% endblock %}
+            </div>
+            <form id="chat-box" class="form-group {% block hide %}hide{% endblock %}" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col s11">
+                        <div class="input-field">
+                            <input id="id_message" name="message" type="text" placeholder="Type your message..">
+                        </div>
+                    </div>
+                    <div class="col s1" style="line-height: 80px">
+                        <button class="btn btn-floating blue lighten-2 waves-effect waves-light"><i class="material-icons">send</i></button>
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    {% load staticfiles %}
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+    <script src="{% static 'js/chat.js' %}"></script>
+    <script>
+        // For receiving
+        sender_id = "{{ receiver.id }}";
+        receiver_id = "{{ request.user.id }}";
+
+        //For sending
+        $(function () {
+            scrolltoend();
+            $('#chat-box').on('submit', function (event) {
+                event.preventDefault();
+                var message = $('#id_message');
+                send('{{ request.user.id }}', '{{ receiver.id }}', message.val());
+                message.val('');
+            })
+        })
+    </script>
+{% endblock %}
+{% endblock %}
