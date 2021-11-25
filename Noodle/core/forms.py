@@ -1,5 +1,5 @@
 from django import forms
-from .models import Course, Assignment, AssignmentSubmission
+from .models import *
 
 
 # FORM FOR CREATE A COURSE
@@ -60,6 +60,7 @@ class CourseCreateForm(forms.ModelForm):
         if commit:
             course.save()
         return course
+
 
 
 # ASSIGNMENT CREATE FORM

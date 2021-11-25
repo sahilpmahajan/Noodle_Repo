@@ -1,19 +1,5 @@
 from django.urls import path
-from .views import (
-HomeView,
-CourseView,
-CourseCreateView,
-course_single,
-AssignmentCreateView,
-AssignmentView,
-AssignmentDeleteView,
-AssignmentSubmissionView,
-AssignmentSubmissionListView,
-AssignmentSubmissionDelete,
-SubmittedAssignment,
-AssignmentFeedback,
-CourseDelete
-)
+from .views import *
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,6 +14,7 @@ urlpatterns = [
                   path('assignment/', AssignmentView.as_view(), name='assignment-list'),
                   path('<pk>/delete/', AssignmentDeleteView.as_view(), name='delete-assignment'),
                   path('<int:id>/course-view/', course_single, name='course-view'),
+                  path('<int:id>/course-register', course_single_register, name='course-register'),
                   path('assignment-submission/', AssignmentSubmissionView.as_view(), name='assignment-submission'),
                   path('assignment-submission-list/', AssignmentSubmissionListView.as_view(), name='assignment-submission-list'),
                   path('submitted-assignment/', SubmittedAssignment.as_view(), name='submitted-assignment'),

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load bootstrap %}
+
+{% block title %} Course Register {% endblock %}
+
+{% block content %}
+
+   
+
+<div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+    <h2 class="w3-wide w3-center">Register Course</h2>
+     <div class="w3-row w3-padding-32">
+
+                   
+                       
+                    <form action="" method="POST">{% csrf_token %}
+                       
+                             <div class="w3-row-padding" style="margin:0 -16px 8px -16px">
+                                <input type="text" name="course_code" class="btn btn-primary btn-md text-white">
+                                <button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Register</button>
+                              
+                            </div>
+                      
+
+                    </form>
+
+            </div>
+
+</div>
+{% endblock %}

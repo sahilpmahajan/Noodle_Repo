@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -7,8 +7,8 @@ from authentication.decorators import user_is_instructor, user_is_student
 from django.core.mail import send_mail
 from django.conf import settings
 
-from .forms import CourseCreateForm, AssignmentCreateForm, AssignmentSubmissionForm
-from .models import Course, Assignment, AssignmentSubmission
+from .forms import *
+from .models import *
 
 
 class HomeView(ListView):
@@ -69,6 +69,17 @@ class CourseView(ListView):
 def course_single(request, id):
     course = get_object_or_404(Course, id=id)
     return render(request, "core/instructor/view_course.html", {'course': course})
+
+
+# REGISTER COURSE
+def course_single_register(request, id):
+    course = get_object_or_404(Course, id=id)
+    if(request.method == 'POST'):
+        course_code = request.POST.get("course_code")
+        if(str(course.course_description) == str(course_code)):
+            return render(request, "core/instructor/view_course.html", {'course': course})
+    
+    return render(request, "core/instructor/register_course.html", {'course': course})
 
 
 # ASSIGNMENT CREATE VIEW
