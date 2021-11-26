@@ -39,3 +39,11 @@ class AssignmentSubmission(models.Model):
     def __str__(self):
         return self.university_id
 
+class Student(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CourseAssignment(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+

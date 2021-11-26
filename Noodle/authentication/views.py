@@ -156,7 +156,7 @@ class RegisterInstructorView(CreateView):
             ##############################3
             htmly = get_template('authentication/instructor/email.html')
             d = { 'username': username }
-            subject, from_email, to = 'welcome', 'yashdahiya2002@gmail.com', email
+            subject, from_email, to = 'welcome', 'aviuday03@gmail.com', email
             html_content = htmly.render(d)
             msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
             msg.attach_alternative(html_content, "text/html")
@@ -261,7 +261,7 @@ def password_reset_request(request):
 					}
 					email = render_to_string(email_template_name, c)
 					try:
-						send_mail(subject, email, 'yashdahiya2002@gmail.com' , [user.email], fail_silently=False)
+						send_mail(subject, email, 'aviuday03@gmail.com' , [user.email], fail_silently=False)
 					except BadHeaderError:
 						return HttpResponse('Invalid header found.')
 

@@ -18,9 +18,14 @@
                 <p> <h4>About Course </h4>{{ course.course_description }} </p>
 
                         <br/>
-                <a href="{% url 'core:assignment-list' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Assignments</button></a>
                         <br/>
+                {% if request.user.is_authenticated and request.user.role == 'student' %}
+                {% if is_registered == 0 %}
                 <a href="{% url 'core:course-register' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Register</button></a>
+                {% else %}
+                <a href="{% url 'core:assignment-list' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Assignments</button></a>
+                {% endif %}
+                {% endif %}
                 <p>  <h4>Course Duration </h4>{{ course.created_at }} - {{ course.end_date }} </p>
 
                 {% if request.user.is_authenticated and request.user.role == 'instructor' %}

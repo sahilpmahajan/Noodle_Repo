@@ -21,8 +21,7 @@
 
 
       <div class="row">
-          {% for course in course %}
-          {% if request.user.email == course.teacher_details %}
+          {% for foo in course %}
         <!-- Single Dentist Area -->
         <div class="col-12 col-sm-6 col-md-4">
 
@@ -35,17 +34,16 @@
               </div>
               <!-- Dentist Info -->
               <div class="dentist-info bg-gradient-overlay">
-                  <h5>{{ course.course_name }}</h5>
-                    
-                  <a href="{% url 'core:course-view' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Course</button></a>
-                 <p>{{ course.teacher_name }} </p>
+                  <h5>{{ foo.course_name }}</h5>
+                  <p>{{ foo.teacher_name }} </p>
+                  <a href="{% url 'core:course-view' foo.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Course</button></a>
+                
 
 
               </div>
             </div>
           </div>
         </div>
-        {% endif %}
       {% endfor %}
 
 

@@ -46,29 +46,49 @@ class CourseCreateView(CreateView):
         self.object = None
         form = self.get_form()
         if form.is_valid():
+            course_name = "CS251"
+            course = Course.objects.get(course_name = course_name)
+            course.user = request.user
+            course.save()
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
 
 
-# VIEW FOR COURSE LIST
-class CourseView(ListView):
-    model = Course
-    template_name = 'core/instructor/courses.html'
-    context_object_name = 'course'
+# # VIEW FOR COURSE LIST
+# class CourseView(ListView):
+#     model = Course
+#     template_name = 'core/instructor/courses.html'
+#     context_object_name = 'course'
 
-    @method_decorator(login_required(login_url=reverse_lazy('authentication:login')))
-    # @method_decorator(user_is_instructor, user_is_student)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(self.request, *args, **kwargs)
+#     @method_decorator(login_required(login_url=reverse_lazy('authentication:login')))
+#     # @method_decorator(user_is_instructor, user_is_student)
+#     def dispatch(self, request, *args, **kwargs):
+#         return super().dispatch(self.request, *args, **kwargs)
 
-    def get_queryset(self):
-        return self.model.objects.all().order_by('-id')  # filter(user_id=self.request.user.id).order_by('-id')
+#     def get_queryset(self):
+#         return self.model.objects.all().order_by('-id')  # filter(user_id=self.request.user.id).order_by('-id')
+
+def view_courselist(request):
+    if(request.user.role=='student'):
+        user = User.objects.get(id=request.user.id)
+        student_list = []
+        for student in user.student_set.all():
+            student_list.append(student.course)
+        return render(request, "core/instructor/courses.html", {'course': student_list})
+    elif(request.user.role=='instructor'):
+        #user = Course.objects.get(id=request.user.id).user
+        return render(request, "core/instructor/courses.html", {'course': request.user.course_set.all()})
 
 
+# SINGLE COURSE VIEW
 def course_single(request, id):
     course = get_object_or_404(Course, id=id)
-    return render(request, "core/instructor/view_course.html", {'course': course})
+    is_registered = 0
+    for user in course.student_set.all():
+        if(request.user.email == user.user.email):
+            is_registered = 1
+    return render(request, "core/instructor/view_course.html", {'course': course , 'is_registered': is_registered})
 
 
 # REGISTER COURSE
@@ -77,6 +97,8 @@ def course_single_register(request, id):
     if(request.method == 'POST'):
         course_code = request.POST.get("course_code")
         if(str(course.course_description) == str(course_code)):
+            new_student = Student(course = course, user = request.user)
+            new_student.save() 
             return render(request, "core/instructor/view_course.html", {'course': course})
     
     return render(request, "core/instructor/register_course.html", {'course': course})
