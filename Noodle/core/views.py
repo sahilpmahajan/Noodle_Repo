@@ -46,10 +46,6 @@ class CourseCreateView(CreateView):
         self.object = None
         form = self.get_form()
         if form.is_valid():
-            course_name = "CS251"
-            course = Course.objects.get(course_name = course_name)
-            course.user = request.user
-            course.save()
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
