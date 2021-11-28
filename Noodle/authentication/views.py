@@ -66,10 +66,22 @@ class RegisterStudentView(CreateView):
 
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = True # Deactivate account till it is confirmed
+            user.is_active = False # Deactivate account till it is confirmed
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
+            current_site = get_current_site(request)
+            email_subject = 'Activate Your Account'
+            message = render_to_string('emails/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(email_subject, message, to = [to_email])
+            email.send()
+            messages.success(request, ('Please Confirm your email to complete registration.'))
             # current_site = get_current_site(request)
             # email_subject = 'Activate Your Account'
             # message = render_to_string('emails/account_activation_email.html', {
@@ -150,6 +162,18 @@ class RegisterInstructorView(CreateView):
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
+            current_site = get_current_site(request)
+            email_subject = 'Activate Your Account'
+            message = render_to_string('emails/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(email_subject, message, to = [to_email])
+            email.send()
+            messages.success(request, ('Please Confirm your email to complete registration.'))
             #added new
             # username = form.cleaned_data.get('username')
             # email = form.cleaned_data.get('email')
@@ -261,7 +285,7 @@ def password_reset_request(request):
 					}
 					email = render_to_string(email_template_name, c)
 					try:
-						send_mail(subject, email, 'aviuday03@gmail.com' , [user.email], fail_silently=False)
+						send_mail(subject, email, 'yashdahiya2002@gmail.com' , [user.email], fail_silently=False)
 					except BadHeaderError:
 						return HttpResponse('Invalid header found.')
 
@@ -273,7 +297,6 @@ def password_reset_request(request):
 
 
 #CHANGE STUDENT PASSWORD
-
 def student_change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -288,6 +311,7 @@ def student_change_password(request):
     return render(request, 'authentication/student/student-change-password.html', {
         'form': form
     })
+
 
 #CHANGE INSTRUCTOR PASSWORD
 def instructor_change_password(request):
@@ -304,4 +328,3 @@ def instructor_change_password(request):
     return render(request, 'authentication/instructor/instructor-change-password.html', {
         'form': form
     })
- 

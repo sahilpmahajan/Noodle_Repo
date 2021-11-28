@@ -12,8 +12,8 @@ class Course(models.Model):
     student_code = models.CharField(max_length=6)
     ta_code =models.CharField(max_length=6)
     created_at = models.DateField(default=timezone.now)
-    end_date = models.CharField(max_length=20)
-    # end_date = models.DateField(max_length=20)
+    #end_date = models.CharField(max_length=20)
+    end_date = models.DateField(max_length=20)
 
 
     def __str__(self):

@@ -14,6 +14,10 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 import statistics 
 from django.utils import timezone
+from django.template.loader import get_template
+from django.core.mail import send_mail
+from django.core.mail.message import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 
 
 class HomeView(ListView):
@@ -96,6 +100,10 @@ def course_single(request, id):
     submitted = []
     total = []
     complete = 0
+    is_ta = 0
+    students = Student.objects.filter(course = course, user=request.user)
+    for item in students:
+        is_ta = item.is_ta
     for user in course.student_set.all():
         if(request.user.email == user.user.email):
             is_registered = 1
@@ -110,7 +118,8 @@ def course_single(request, id):
     return render(request, "core/instructor/view_course.html", {
         'course': course , 
         'is_registered': is_registered,
-        'complete' : complete
+        'complete' : complete,
+        'is_ta': is_ta
         })
 
 
@@ -130,6 +139,11 @@ def course_single_register(request, id):
     
     return render(request, "core/instructor/register_course.html", {'course': course})
 
+def get_student_list(id):#returns email id of students having course id 'id'
+    course = get_object_or_404(Course, id=id)
+    student_list = Student.objects.filter(course=course)
+    return student_list
+
 
 # ASSIGNMENT CREATE VIEW
 def assignment_create(request, id):
@@ -144,6 +158,18 @@ def assignment_create(request, id):
         due_date = request.POST['due_date']
         ass = Assignment.objects.create(course=course, title = title, content=content, marks=marks, duration=duration, weight=weight, due_date = due_date)
         ass.save()
+        student_list = get_student_list(id)
+        for student in student_list:
+            #send email through iteration
+            email = student.user.email
+            name = student.user.first_name
+            htmly = get_template('core/instructor/assignment_emails.html')
+            d = { 'name': name }
+            subject, from_email, to = 'NEW ASSIGNMENT', 'sahilpmahajan@gmail.com', email
+            html_content = htmly.render(d)
+            msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
         return redirect(f"http://127.0.0.1:8000/{id}/assignment")
     return render(request, "core/instructor/assignment_create.html")
 
@@ -205,6 +231,15 @@ def assignment_submit(request, id, pk):
             ass_sub = AssignmentSubmission.objects.create(
                 user=request.user, assignment=assignment, name=name, content=content, university_id=university_id, file=file)
             ass_sub.save()
+            email = request.user.email
+            name = request.user.first_name
+            htmly = get_template('core/email_submission.html')
+            d = { 'name': name }
+            subject, from_email, to = 'welcome', 'sahilpmahajan@gmail.com', email
+            html_content = htmly.render(d)
+            msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
             return redirect("http://127.0.0.1:8000/")
         return render(request, "core/instructor/assignment_submission.html")
     else:
