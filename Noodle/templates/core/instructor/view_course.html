@@ -13,9 +13,9 @@
                 <hr/>
                 <h4> <strong>Instructor :</strong> {{ course.teacher_name }} </h4>
                         <br/>
-                <p> <h4>About Instructor </h4>{{ course.teacher_details }} </p>
+                <h4> <strong>About Course :</strong> {{ course.teacher_details }}</h4>
+                
                         
-                <p> <h4>About Course </h4>{{ course.course_description }} </p>
 
                         <br/>
                         <br/>
@@ -27,7 +27,7 @@
                 <a href="{% url 'core:discussion-list' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Discussions</button></a>
                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 
-
+                {% if is_ta == 0 %}
                 <section id="about">
                 <h5 class="text-center pb-3">% Course Completed</h5>
                 <div class="container">
@@ -40,6 +40,7 @@
                         </div>
                 </div>
                 </section>
+                {% endif %}
                 {% endif %}
                 {% endif %}
                 <p>  <h4>Course Duration </h4>{{ course.created_at }} - {{ course.end_date }} </p>

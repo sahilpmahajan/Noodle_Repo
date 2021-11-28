@@ -48,6 +48,7 @@ class CourseCreateView(CreateView):
         foo = super(CourseCreateView, self).form_valid(form)
         course_name = form.cleaned_data['course_name']
         course = Course.objects.get(course_name = course_name)
+        course.teacher_name = self.request.user.first_name + " " + self.request.user.last_name
         course.user = self.request.user
         course.save()
         return foo
@@ -118,8 +119,12 @@ def course_single_register(request, id):
     course = get_object_or_404(Course, id=id)
     if(request.method == 'POST'):
         course_code = request.POST.get("course_code")
-        if(str(course.course_description) == str(course_code)):
-            new_student = Student(course = course, user = request.user)
+        if(str(course.student_code) == str(course_code)):
+            new_student = Student(course = course, user = request.user, is_ta = 0)
+            new_student.save() 
+            return render(request, "core/instructor/view_course.html", {'course': course})
+        elif(str(course.ta_code) == str(course_code)):
+            new_student = Student(course = course, user = request.user, is_ta = 1)
             new_student.save() 
             return render(request, "core/instructor/view_course.html", {'course': course})
     
@@ -127,39 +132,6 @@ def course_single_register(request, id):
 
 
 # ASSIGNMENT CREATE VIEW
-# class AssignmentCreateView(CreateView):
-#     template_name = 'core/instructor/assignment_create.html'
-#     form_class = AssignmentCreateForm
-#     extra_context = {
-#         'title': 'New Course'
-#     }
-#     success_url = reverse_lazy('core:assignment-list')
-
-#     @method_decorator(login_required(login_url=reverse_lazy('authentication:login')))
-#     def dispatch(self, request, *args, **kwargs):
-#         if not self.request.user.is_authenticated:
-#             return reverse_lazy('authentication:login')
-#         if self.request.user.is_authenticated and self.request.user.role != 'instructor':
-#             return reverse_lazy('authentication:login')
-#         return super().dispatch(self.request, *args, **kwargs)
-
-#     def form_valid(self, form):
-#         form.instance.user = self.request.user
-#         foo = super(AssignmentCreateView, self).form_valid(form)
-#         form.instance.course = self.kwargs.get('id')
-#         ass_name = form.cleaned_data['title']
-#         ass = Assignment.objects.get(title = ass_name)
-#         ass.save()
-#         return foo
-
-#     def post(self, request, *args, **kwargs):
-#         self.object = None
-#         form = self.get_form()
-#         if form.is_valid():
-#             return self.form_valid(form)
-#         else:
-#             return self.form_invalid(form)
-
 def assignment_create(request, id):
     #user = request.user
     course = get_object_or_404(Course, id=id)
@@ -174,27 +146,19 @@ def assignment_create(request, id):
         ass.save()
         return redirect(f"http://127.0.0.1:8000/{id}/assignment")
     return render(request, "core/instructor/assignment_create.html")
+
+
 # VIEW FOR ASSIGNMENT LIST
-# class AssignmentView(ListView):
-#     model = Assignment
-#     template_name = 'core/instructor/assignments.html'
-#     context_object_name = 'assignment'
-
-#     @method_decorator(login_required(login_url=reverse_lazy('authentication:login')))
-#     # @method_decorator(user_is_student, user_is_instructor)
-#     def dispatch(self, request, *args, **kwargs):
-#         return super().dispatch(self.request, *args, **kwargs)
-
-#     def get_queryset(self):
-#         return self.model.objects.all()  # filter(user_id=self.request.user.id).order_by('-id')
-
 def view_assignmentlist(request, id):
         # user = User.objects.get(id=request.user.id)
         course = get_object_or_404(Course, id=id)
         id=id
-        assignment_list = Assignment.objects.filter(course = course)
-        
-        if(request.user.role == 'student'):
+        assignment_list = Assignment.objects.filter(course = course).order_by('due_date')
+        is_ta = 0
+        students = Student.objects.filter(course = course, user=request.user)
+        for item in students:
+            is_ta = item.is_ta
+        if(request.user.role == 'student' and is_ta==0):
             submitted = []
             not_submitted = []
             for assignment in assignment_list:
@@ -202,15 +166,12 @@ def view_assignmentlist(request, id):
                         submitted.append(assignment)
                     else:
                         not_submitted.append(assignment)
-            return render(request, "core/instructor/assignments.html", {'not_submitted': not_submitted , 'id': id, 'submitted': submitted})
-        elif(request.user.role == 'instructor'):
-            return render(request, "core/instructor/assignments.html", {'assignment': assignment_list , 'id': id})
+        
+            return render(request, "core/instructor/assignments.html", {'not_submitted': not_submitted , 'id': id, 'submitted': submitted, 'is_ta': is_ta})
+        elif(request.user.role == 'instructor' or is_ta==1):
+            return render(request, "core/instructor/assignments.html", {'assignment': assignment_list , 'id': id, 'is_ta': is_ta})
 
 # # DELETE ASSIGNMENT VIEW
-# class AssignmentDeleteView(DeleteView):
-#     model = Assignment
-#     success_url = reverse_lazy('core:assignment-list')
-
 def delete_assignment(request,id):
 
     assign = Assignment.objects.filter(id=id)
@@ -218,45 +179,15 @@ def delete_assignment(request,id):
     assign.delete()
     return redirect(f"http://127.0.0.1:8000/course")
 
-# ASSIGNMENT SUBMISSION VIEW
-# class AssignmentSubmissionView(CreateView):
-#     template_name = 'core/instructor/assignment_submission.html'
-#     form_class = AssignmentSubmissionForm
-#     extra_context = {
-#         'title': 'New Exam'
-#     }
-#     success_url = reverse_lazy('core:home')
-
-#     @method_decorator(login_required(login_url=reverse_lazy('authentication:login')))
-#     def dispatch(self, request, *args, **kwargs):
-#         if not self.request.user.is_authenticated:
-#             return reverse_lazy('authentication:login')
-#         if self.request.user.is_authenticated and self.request.user.role != 'student':
-#             return reverse_lazy('authentication:login')
-#         return super().dispatch(self.request, *args, **kwargs)
-
-#     def form_valid(self, form):
-#         form.instance.user = self.request.user
-#         return super(AssignmentSubmissionView, self).form_valid(form)
-
-#     def post(self, request, *args, **kwargs):
-#         self.object = None
-#         form = self.get_form()
-#         if form.is_valid():
-#             return self.form_valid(form)
-#         else:
-#             return self.form_invalid(form)
 
 #put this instead of your assignment_submit
 def assignment_submission_is_valid(due_date):
     now = timezone.localtime(timezone.now())
-    print(now)
-    print(due_date)
     if(now <= due_date):  # before submission deadline
         return True
     return False
 
-
+# ASSIGNMENT SUBMISSION VIEW
 def assignment_submit(request, id, pk):
     #user = request.user
     #course = get_object_or_404(Course, id=id)
@@ -267,7 +198,7 @@ def assignment_submit(request, id, pk):
     print('hello')
     if(assignment_submission_is_valid(assignment.due_date)):
         if(request.method == 'POST'):
-            name = request.POST['name']
+            name = request.user.first_name + ' ' + request.user.last_name
             university_id = request.POST['university_id']
             content = request.POST['content']
             file = request.FILES['file']
@@ -283,34 +214,7 @@ def assignment_submit(request, id, pk):
 def invalid_submission(request):
     return render(request, "core/invalid_submission.html")
 
-# VIEW FOR Assignment Submission List
-# class AssignmentSubmissionListView(ListView):
-#     model = AssignmentSubmission
-#     template_name = 'core/instructor/submitted_assignment.html'
-#     context_object_name = 'assignment_submission'
 
-#     @method_decorator(login_required(login_url=reverse_lazy('authentication:login')))
-#     # @method_decorator(user_is_instructor, user_is_student)
-#     def dispatch(self, request, *args, **kwargs):
-#         return super().dispatch(self.request, *args, **kwargs)
-
-#     def get_queryset(self):
-#         return self.model.objects.all().order_by('-id')  # filter(user_id=self.request.user.id).order_by('-id')
-
-
-# VIEW FOR Submitted Assignment
-# class SubmittedAssignment(ListView):
-#     model = AssignmentSubmission
-#     template_name = 'core/instructor/submitted_assignment.html'
-#     context_object_name = 'assignment_submission'
-
-#     @method_decorator(login_required(login_url=reverse_lazy('authentication:login')))
-#     @method_decorator(user_is_student)
-#     def dispatch(self, request, *args, **kwargs):
-#         return super().dispatch(self.request, *args, **kwargs)
-
-#     def get_queryset(self):
-#         return self.model.objects.filter(user_id=self.request.user.id).order_by('-id')
 
 def view_assignmentsubmissionlist(request, id, pk):
         # user = User.objects.get(id=request.user.id)
@@ -318,22 +222,21 @@ def view_assignmentsubmissionlist(request, id, pk):
         assignment = get_object_or_404(Assignment, pk=pk)
         id=id
         pk=pk
-        if(request.user.role == 'student'):
+        is_ta = 0
+        students = Student.objects.filter(course = assignment.course, user=request.user)
+        for item in students:
+            is_ta = item.is_ta
+        if(request.user.role == 'student' and is_ta == 0):
             assignmentsub_list = AssignmentSubmission.objects.filter(assignment = assignment, user = request.user)
         else:
             assignmentsub_list = AssignmentSubmission.objects.filter(assignment = assignment)
-        return render(request, "core/instructor/submitted_assignment.html", {'assignment_submission': assignmentsub_list , 'id': id, 'pk': pk})
+        return render(request, "core/instructor/submitted_assignment.html", {'assignment_submission': assignmentsub_list , 'id': id, 'pk': pk, 'is_ta': is_ta})
+
+
+
 
 
 # # ASSIGNMENT FEEDBACK VIEW
-# class AssignmentFeedback(UpdateView):
-#     template_name = 'core/instructor/assignment_feedback.html'
-#     #form_class = FeedbackForm
-#     model = AssignmentSubmission
-#     fields = ['feedback','marks_obtained']
-
-#     success_url = reverse_lazy('core:assignment-submission')
-
 def assignment_feedback(request, id, pk, cd):
     #user = request.user
     #course = get_object_or_404(Course, id=id)
@@ -351,10 +254,6 @@ def assignment_feedback(request, id, pk, cd):
 
 
 # ASSIGNMENT DELETE VIEW
-# class AssignmentSubmissionDelete(DeleteView):
-#     model = AssignmentSubmission
-#     success_url = reverse_lazy('core:assignment-submission')
-
 def delete_assignmentsubmission(request,pk):
 
     assignsub = AssignmentSubmission.objects.filter(pk=pk)
@@ -408,31 +307,35 @@ def assignment_chart(request,id,pk):
     labelstudent = []
     datastudent = []
     assignment = get_object_or_404(Assignment, pk=pk)
-    
+    is_ta = 0
+    students = Student.objects.filter(course = assignment.course, user=request.user)
+    for item in students:
+        is_ta = item.is_ta
     assignmentsub_list = AssignmentSubmission.objects.filter(assignment = assignment)
-    for item in assignmentsub_list:
-        labels.append(item.university_id)
-        data.append(item.marks_obtained)
-    average = sum(data)/len(data)
-    labels.append("Average")
-    data.append(average)
-    var = statistics.variance(data)
-    labels.append("Variance")
-    data.append(var)
-    assignmentStudent = AssignmentSubmission.objects.filter(assignment = assignment, user = request.user)
-    for item in assignmentStudent:
-        labelstudent.append("Your Marks")
-        datastudent.append(item.marks_obtained)
-        if(item.marks_obtained < average):
-            warning = "Warning: Your Marks are below Average for this assignment"
-        else:
-            warning = "Congrats: Your Marks are above Average for this assignment"
-    labelstudent.append("Average")
-    labelstudent.append("Variance")
-    datastudent.append(average)
-    datastudent.append(var)
+    if(len(assignmentsub_list)!=0):
+        for item in assignmentsub_list:
+            labels.append(item.university_id)
+            data.append(item.marks_obtained)
+        average = sum(data)/len(data)
+        labels.append("Average")
+        data.append(average)
+        var = statistics.variance(data)
+        labels.append("Variance")
+        data.append(var)
+        assignmentStudent = AssignmentSubmission.objects.filter(assignment = assignment, user = request.user)
+        for item in assignmentStudent:
+            labelstudent.append("Your Marks")
+            datastudent.append(item.marks_obtained)
+            if(item.marks_obtained < average):
+                warning = "Warning: Your Marks are below Average for this assignment"
+            else:
+                warning = "Congrats: Your Marks are above Average for this assignment"
+        labelstudent.append("Average")
+        labelstudent.append("Variance")
+        datastudent.append(average)
+        datastudent.append(var)
 
-    if(request.user.role == "instructor"):
+    if(request.user.role == "instructor" or is_ta ):
         return render(request, 'core/chart/assignment_submission_chart.html', {
             'labels' : labels,
             'data' : data,
@@ -456,14 +359,15 @@ def assignment_course_average_chart(request,id):
         if(request.user.role == 'instructor'):
             for assignment in assignment_list:
                     submissions = assignment.assignmentsubmission_set.all()
-                    for submission in submissions:
-                        dataset.append(submission.marks_obtained)
-                    mean = sum(dataset)/len(dataset)
-                    var = statistics.variance(dataset)
-                    data.append(mean)
-                    data.append(var)
-                    labels.append("Average "+assignment.title)
-                    labels.append("Variance "+assignment.title)
+                    if(len(submissions)!=0):
+                        for submission in submissions:
+                            dataset.append(submission.marks_obtained)
+                        mean = sum(dataset)/len(dataset)
+                        var = statistics.variance(dataset)
+                        data.append(mean)
+                        data.append(var)
+                        labels.append("Average "+assignment.title)
+                        labels.append("Variance "+assignment.title)
             return render(request, "core/chart/assignment_submission_chart.html", 
             {'labels': labels , 
             'data': data
@@ -497,19 +401,28 @@ def course_total_chart(request,id):
 #TO-DO LIST VIEW
 
 def student_to_do_list(request):
-        assignment_list = Assignment.objects.filter()
-        
-        if(request.user.role == 'student'):
+        assignment_list = Assignment.objects.filter().order_by('due_date')
+        is_ta = 0
+        now = timezone.localtime(timezone.now())
+        students = Student.objects.filter(course = assignment_list[0].course, user=request.user)
+        for item in students:
+            is_ta = item.is_ta
+        if(request.user.role == 'student' and is_ta == 0):
             submitted = []
             not_submitted = []
             for assignment in assignment_list:
+                is_registered = 0
+                for user in assignment.course.student_set.all():
+                    if(request.user.email == user.user.email):
+                        is_registered = 1
+                if(is_registered == 1):
                     if request.user.assignmentsubmission_set.filter(assignment = assignment):
                         submitted.append(assignment)
-                    else:
+                    elif(now <= assignment.due_date):
                         not_submitted.append(assignment)
-            return render(request, "core/student_todo_list.html", {'not_submitted': not_submitted , 'id': request.user.id, 'submitted': submitted})
+            return render(request, "core/student_todo_list.html", {'not_submitted': not_submitted , 'id': request.user.id, 'submitted': submitted, 'is_ta': is_ta})
 
-        else:
+        elif(request.user.role == 'instructor' or is_ta == 1):
             courses = Course.objects.filter(user = request.user)
             ass_sub_list = []
             for course in courses:
@@ -525,7 +438,7 @@ def student_to_do_list(request):
             
                 ass_sub_list.append(course_ass)
 
-            return render(request, "core/student_todo_list.html", {'ass_sub_list': ass_sub_list})
+            return render(request, "core/student_todo_list.html", {'ass_sub_list': ass_sub_list, 'is_ta': is_ta})
             #ass_sub.assignment.course.course_name
             #ass_sub.assignment.title
             #ass_sub.name

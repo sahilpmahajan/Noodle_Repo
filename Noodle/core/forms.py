@@ -6,15 +6,16 @@ from .models import *
 class CourseCreateForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['course_name', 'teacher_name', 'teacher_details', 'course_description', 'end_date']
+        fields = ['course_name',  'teacher_details', 'student_code','ta_code', 'end_date']
 
     def __init__(self, *args, **kwargs):
         super(CourseCreateForm, self).__init__(*args, **kwargs)
         self.fields['course_name'].label = "Course Name"
         #self.fields['course_image'].label = "Image"
-        self.fields['teacher_name'].label = "Teacher Name"
-        self.fields['teacher_details'].label = "Teacher Details"
-        self.fields['course_description'].label = "Description"
+        #self.fields['teacher_name'].label = "Teacher Name"
+        self.fields['teacher_details'].label = "Course Details"
+        self.fields['student_code'].label = "Student Code"
+        self.fields['ta_code'].label = "TA Code"
         self.fields['end_date'].label = "End Date"
 
         self.fields['course_name'].widget.attrs.update(
@@ -29,23 +30,29 @@ class CourseCreateForm(forms.ModelForm):
         #     }
         # )
 
-        self.fields['teacher_name'].widget.attrs.update(
-            {
-                'placeholder': 'Teacher Name',
-            }
-        )
+        # self.fields['teacher_name'].widget.attrs.update(
+        #     {
+        #         'placeholder': 'Teacher Name',
+        #     }
+        # )
 
         self.fields['teacher_details'].widget.attrs.update(
             {
-                'placeholder': 'Teacher Details',
+                'placeholder': 'Course Details',
             }
         )
 
-        self.fields['course_description'].widget.attrs.update(
+        self.fields['student_code'].widget.attrs.update(
             {
-                'placeholder': 'Description',
+                'placeholder': 'Student Code',
             }
         )
+        self.fields['ta_code'].widget.attrs.update(
+            {
+                'placeholder': 'TA Code',
+            }
+        )
+
 
     def is_valid(self):
         valid = super(CourseCreateForm, self).is_valid()

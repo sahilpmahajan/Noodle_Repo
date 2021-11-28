@@ -9,9 +9,12 @@ class Course(models.Model):
     #course_image = models.ImageField(upload_to='media')
     teacher_name = models.CharField(max_length=50)
     teacher_details = models.TextField()
-    course_description = models.TextField()
+    student_code = models.CharField(max_length=6)
+    ta_code =models.CharField(max_length=6)
     created_at = models.DateField(default=timezone.now)
     end_date = models.CharField(max_length=20)
+    # end_date = models.DateField(max_length=20)
+
 
     def __str__(self):
         return self.course_name
@@ -47,6 +50,7 @@ class AssignmentSubmission(models.Model):
 class Student(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_ta = models.BooleanField()
 
 class CourseAssignment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

@@ -26,49 +26,44 @@
                 {% endfor %}
 
 
-            {% else %}
+            {% endif %}
 
+            {% if request.user.is_authenticated and request.user.role == 'student' and is_ta == 0 %}
             <h1>Pending Assignments</h1>
             <hr/>
             {% for foo in not_submitted %}
             <h2>{{ foo.course.course_name }}</h2>
             <a href="{% url 'core:assignment-list' foo.course.id %}"><h3><strong> {{ foo.title }}  </strong></h3>
-                
+                {{ foo.due_date }}
 
                     <hr/>
-                    <!-- <p> <h4>Content</h4> {{ foo.content }} </p>
-                 
-                    <p> <h4>Marks</h4> {{ foo.marks }} </p>
-
-                    <p> <h4>Time</h4> {{ foo.duration }} hours </p> -->
-                    
-            
-            <!-- <button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submit Assignment</button></a> -->
-             
+                   
                   <hr/>
                 <br>
                 {% endfor %}
-                <!-- <h1>Assignments Submitted</h1>
-                <hr/>
-                {% for foo in submitted %}
-                    <h3><strong> {{ foo.title }}  </strong></h3>
-                    <hr/>
-                    <p> <h4>Content</h4> {{ foo.content }} </p>
-                    
-                    <p> <h4>Marks</h4> {{ foo.marks }} </p>
-
-                    <p> <h4>Time</h4> {{ foo.duration }} hours </p>
-                    <br/>
-             
-                 
-                  <a href="{{foo.id}}/submitted-assignment"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submitted Assignment</button></a> -->
-
-                <!-- {% endfor %} -->
+                
                 
                     <br/>
                 
-                
+            {% endif %}
+            
 
+            {% if request.user.is_authenticated and request.user.role == 'student' and is_ta == 1 %}
+            <h1>Pending Feedback</h1>
+            <br>
+            <br>
+            <br>
+                {% for course in ass_sub_list %}
+                    {% for assignment in course%}
+                        {% for sub in assignment %}
+                            <h2>{{ sub.assignment.course.course_name }}</h2>
+                            <h3>{{ sub.assignment.title }}</h3>
+                            <a href="http://127.0.0.1:8000/{{sub.assignment.course.id}}/assignment/{{sub.assignment.id}}/submitted-assignment"><h4>{{ sub.name }}</h4></a>
+                            <br>
+                            <br>
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
             {% endif %}
            
             <br/>
