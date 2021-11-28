@@ -17,7 +17,10 @@
                     <p> <h4><strong>Marks:</strong>  {{ foo.marks }} </h4> </p>
 
                     <p> <h4><strong>Time:</strong> {{ foo.duration }} hours </h4></p>
-                    
+                    <p> <h4><strong>Weight:</strong>  {{ foo.weight }} </h4> </p>
+            
+            <a href="{{foo.id}}/submitted-assignment"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submitted Assignments</button></a>
+   
             <a href="{% url 'core:delete-assignment' foo.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Delete Assignment</button></a>
                    
                     <hr/>
@@ -26,35 +29,54 @@
                 {% endfor %}
                 
 
-            <a href="{% url 'core:assignment-create' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Create Assignment</button></a>
+            <a href="{% url 'core:assignment-create' id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Create Assignment</button></a>
+            <a href="assignment-course-chart"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Course Statistics</button></a>
 
 
 
             {% else %}
 
-
-                {% for foo in assignment %}
+            <h1>Pending Assignments</h1>
+            <hr/>
+            {% for foo in not_submitted %}
                     <h3><strong> {{ foo.title }}  </strong></h3>
                     <hr/>
                     <p> <h4>Content</h4> {{ foo.content }} </p>
-                    <br/>
+                 
                     <p> <h4>Marks</h4> {{ foo.marks }} </p>
 
                     <p> <h4>Time</h4> {{ foo.duration }} hours </p>
-                    <br/>
-                    
-                    
- <a href="{% url 'core:assignment-submission' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submit Assignment</button></a>
+                    <p> <h4><strong>Weight:</strong>  {{ foo.weight }} </h4> </p>
+            
+            <a href="{{foo.id}}/assignment-submission"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submit Assignment</button></a>
              
                   <hr/>
+                <br>
                 {% endfor %}
-<a href="{% url 'core:submitted-assignment' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submitted Assignments</button></a>
+                <h1>Assignments Submitted</h1>
+                <hr/>
+                {% for foo in submitted %}
+                    <h3><strong> {{ foo.title }}  </strong></h3>
+                    <hr/>
+                    <p> <h4>Content</h4> {{ foo.content }} </p>
+                    
+                    <p> <h4>Marks</h4> {{ foo.marks }} </p>
+
+                    <p> <h4>Time</h4> {{ foo.duration }} hours </p>
+                    <p> <h4><strong>Weight:</strong>  {{ foo.weight }} </h4> </p>
+                    <br/>
+             
+                 
+                  <a href="{{foo.id}}/submitted-assignment"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Submitted Assignment</button></a>
+
+                {% endfor %}
                 
                     <br/>
-                <hr/>
-
+                
+                    <a href="course-total"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Your Weighted Course Total</button></a>
 
             {% endif %}
+           
             <br/>
 
 

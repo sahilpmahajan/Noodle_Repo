@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Comments{% endblock %}
+
+
+{% block content %}
+
+
+<div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+     <h2 class="w3-wide w3-center">Comments</h2>
+
+        <hr/>
+            {% for foo in comments_list %}
+
+
+                <p> <h4>Name</h4> {{ foo.user.first_name }} </p>
+
+                <p> <h4>Comment</h4>{{ foo.content }} </p>
+            
+                
+        
+                <p> <h4>Written at</h4> {{ foo.time }}  </p>
+    
+    
+                <hr/>
+            {% endfor %}    
+            <a href="http://127.0.0.1:8000/{{id}}/discussion/{{pk}}/comment-create"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">New Comment</button></a>
+    </div>
+
+
+{% endblock %}

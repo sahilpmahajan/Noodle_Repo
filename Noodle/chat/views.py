@@ -4,9 +4,9 @@ from django.http.response import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from chat.models import Message
+from chat.models import Message, Settings
 # from chat.forms import SignUpForm
-from chat.serializers import MessageSerializer, UserSerializer
+from chat.serializers import MessageSerializer, UserSerializer, SettingsSerializer
 
 
 def index(request):
@@ -91,3 +91,23 @@ def message_view(request, sender, receiver):
                        'messages': Message.objects.filter(sender_id=sender, receiver_id=receiver) |
                                    Message.objects.filter(sender_id=receiver, receiver_id=sender)})
 
+@csrf_exempt
+def settings_list(request):
+    """
+    List all required messages, or create a new message.
+    """
+    if request.method == 'GET':
+        blocks = Settings.objects.values()
+        data = list(blocks)
+        #x = SettingsSerializer(data=blocks)
+        return JsonResponse(data, safe=False)
+    elif request.method == 'POST':
+        if request.user.role != "instructor" :
+            return HttpResponse('{"error": "You are not authorized to perform this action"}')
+        
+        data = JSONParser().parse(request)
+        serializer = SettingsSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)

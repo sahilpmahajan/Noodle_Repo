@@ -15,8 +15,18 @@
                           <br/>
                     <form action="" method="POST">{% csrf_token %}
 
-                        {{ form|bootstrap }}
-
+                        TITLE<input type="text" name="title" class="btn btn-primary btn-md text-white">
+                        <br>
+                        CONTENT<input type="text" name="content" class="btn btn-primary btn-md text-white">
+                        <br>
+                        MARKS<input type="text" name="marks" class="btn btn-primary btn-md text-white">
+                        <br>
+                        TIME<input type="text" name="duration" class="btn btn-primary btn-md text-white">
+                        <br>
+                        WEIGHT<input type="number" name="weight" step = ".01" class="btn btn-primary btn-md text-white">
+                        <br>
+                        DUE DATE<input type="datetime-local" name="due_date" class="btn btn-primary btn-md text-white">
+                        <br/>
                         <div class="w3-row-padding" style="margin:0 -16px 8px -16px">
                         <button class="w3-button w3-black w3-section w3-right" type="submit">Create</button>
                         </div>

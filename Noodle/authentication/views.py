@@ -66,22 +66,22 @@ class RegisterStudentView(CreateView):
 
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False # Deactivate account till it is confirmed
+            user.is_active = True # Deactivate account till it is confirmed
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
-            current_site = get_current_site(request)
-            email_subject = 'Activate Your Account'
-            message = render_to_string('emails/account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
-            to_email = form.cleaned_data.get('email')
-            email = EmailMessage(email_subject, message, to = [to_email])
-            email.send()
-            messages.success(request, ('Please Confirm your email to complete registration.'))
+            # current_site = get_current_site(request)
+            # email_subject = 'Activate Your Account'
+            # message = render_to_string('emails/account_activation_email.html', {
+            #     'user': user,
+            #     'domain': current_site.domain,
+            #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            #     'token': account_activation_token.make_token(user),
+            # })
+            # to_email = form.cleaned_data.get('email')
+            # email = EmailMessage(email_subject, message, to = [to_email])
+            # email.send()
+            # messages.success(request, ('Please Confirm your email to complete registration.'))
             #send email if valid registeration, recipient_list mein put email of the user who just registered
             #subject = 'Thank you for registering to our site'
             #message = ' It is a decent site.'
@@ -151,18 +151,18 @@ class RegisterInstructorView(CreateView):
             user.set_password(password)
             user.save()
             #added new
-            username = form.cleaned_data.get('username')
-            email = form.cleaned_data.get('email')
-            ##############################3
-            htmly = get_template('authentication/instructor/email.html')
-            d = { 'username': username }
-            subject, from_email, to = 'welcome', 'aviuday03@gmail.com', email
-            html_content = htmly.render(d)
-            msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
-            ########################################
-            messages.success(request, f'Your account has been created! You should now be able to log in.')
+            # username = form.cleaned_data.get('username')
+            # email = form.cleaned_data.get('email')
+            # ##############################3
+            # htmly = get_template('authentication/instructor/email.html')
+            # d = { 'username': username }
+            # subject, from_email, to = 'welcome', 'aviuday03@gmail.com', email
+            # html_content = htmly.render(d)
+            # msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+            # msg.attach_alternative(html_content, "text/html")
+            # msg.send()
+            # ########################################
+            # messages.success(request, f'Your account has been created! You should now be able to log in.')
             return redirect('authentication:login')
         else:
             return render(request, 'authentication/instructor/register.html', {'form': form})

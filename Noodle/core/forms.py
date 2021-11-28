@@ -167,3 +167,5 @@ class AssignmentSubmissionForm(forms.ModelForm):
         return course
 
 
+class CsvImportForm(forms.Form):
+    csv_upload = forms.FileField()

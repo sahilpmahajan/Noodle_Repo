@@ -23,12 +23,30 @@
                 {% if is_registered == 0 %}
                 <a href="{% url 'core:course-register' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Register</button></a>
                 {% else %}
-                <a href="{% url 'core:assignment-list' %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Assignments</button></a>
+                <a href="{% url 'core:assignment-list' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Assignments</button></a>
+                <a href="{% url 'core:discussion-list' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Discussions</button></a>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+
+
+                <section id="about">
+                <h5 class="text-center pb-3">% Course Completed</h5>
+                <div class="container">
+                        <div class="row">
+                        <div class="col-20 col-md-6 col-lg-10 offset-lg-1">
+                                <div class="progress mb-2">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: {{ complete }}%">{{ complete }}%</div>
+                                </div>                            
+                        </div>
+                        </div>
+                </div>
+                </section>
                 {% endif %}
                 {% endif %}
                 <p>  <h4>Course Duration </h4>{{ course.created_at }} - {{ course.end_date }} </p>
 
                 {% if request.user.is_authenticated and request.user.role == 'instructor' %}
+                <a href="{% url 'core:assignment-list' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Assignments</button></a>
+                <a href="{% url 'core:discussion-list' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Discussions</button></a>
                 <a href="{% url 'core:delete-course' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Delete Course</button></a>
                 {% endif %}
         </div>

@@ -12,7 +12,10 @@
                       
                               <br/>
                              <form action="" method="POST">{% csrf_token %}
-                                {{ form.as_p }} 
+
+                              FEEDBACK<input type="text" name="feedback" class="btn btn-primary btn-md text-white">
+                             </br>
+                              MARKS OBTAINED<input type="number" name="marks_obtained" class="btn btn-primary btn-md text-white">
                                 <input type="submit" value="Save"> 
                                   
                                 </form> 

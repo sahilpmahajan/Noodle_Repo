@@ -24,8 +24,22 @@
                 {% if foo.feedback %}
                 <p> <h4>Feedback</h4> {{ foo.feedback }}  </p>
                 {% endif %}
+                {% if foo.marks_obtained %}
+                <p> <h4>Marks Obtained</h4> {{ foo.marks_obtained }}  </p>
+                {% endif %}
+                <a href="{% url 'core:submission-delete' foo.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Delete Submission</button></a>
+                
+                {% if request.user.is_authenticated and request.user.role == 'instructor' %}
+                <a href="submitted-assignment/{{foo.id}}/assignment-feedback"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Give/Edit Feedback</button></a>
+                {% endif %}
                 <hr/>
-            {% endfor %}       
+            {% endfor %}   
+                {% if request.user.is_authenticated and request.user.role == 'instructor' %}
+                <a href="submitted-assignment/upload-csv"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Give Feedback via CSV</button></a>
+                
+                {% endif %}
+                <a href="submitted-assignment/assignment-chart"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Assignment Statistics</button></a>
+
     </div>
 
 

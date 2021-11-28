@@ -9,7 +9,11 @@
           <li><a href="" class="w3-bar-item w3-button">{{ request.user.first_name }}</a></li>
           <li><a href="/" class="w3-bar-item w3-button">Home</a></li>
           <li><a href="{% url 'core:course' %}" class="w3-bar-item w3-button">Courses</a></li>
-
+          {% if request.user.role == "instructor" %}
+          <a tabindex="0" class="w3-bar-item w3-button chat-toggle">
+              Disable Chat
+          </a>
+         {% endif %}
       </ul>
     </div>
 </nav>
@@ -54,9 +58,54 @@
     </div>
     </div>
     {% load static %}
-    <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"
+        integrity="sha256-rtaseLgkmpx8/wAw87kh7p93HLFoQWTz5nnhAjpNXGk=" crossorigin="anonymous"></script>
     <script src="{% static 'js/chat.js' %}"></script>
     <script>
+
+;(async () => {
+            var settings = await axios({url: "/api/settings"})
+            var obj = settings.data[settings.data.length - 1]
+            if(obj.key !== "blocked") { return }
+            if(obj.value == "true") {
+                $("#chat-box").remove()
+                alert("Chat is currently disabled.")
+                $(".chat-toggle").text("Enable Chat")
+            }
+        })();
+
+        $(".chat-toggle").click(function() {
+            if($(this).text() == "Enable Chat") {
+                $(this).text("Disable Chat")
+                axios({
+                    url: "/api/settings/",
+                    method: "POST",
+                    data: {
+                        key: "blocked",
+                        value: "false"
+                    }
+                })
+                .then(x => {
+                    console.log("UPDATE SETTINGS", x.data)
+                    window.location = "/chat"
+                })
+            } else {
+                $(this).text("Enable Chat")
+                axios({
+                    url: "/api/settings/",
+                    method: "POST",
+                    data: {
+                        key: "blocked",
+                        value: "true"
+                    }
+                })
+                .then(x => {
+                    console.log("UPDATE SETTINGS", x.data)
+                    window.location = "/chat"
+                })
+            }
+        })
+
         // For receiving
         sender_id = "{{ receiver.id }}";
         receiver_id = "{{ request.user.id }}";

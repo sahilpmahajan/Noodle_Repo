@@ -16,3 +16,13 @@ class Message(models.Model):
         ordering = ('timestamp',)
 
 
+class Settings(models.Model):
+    key = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.key
+
+    class Meta:
+        ordering = ('timestamp',)
