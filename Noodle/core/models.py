@@ -38,14 +38,13 @@ class AssignmentSubmission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    university_id = models.CharField(max_length=100)
     content = models.TextField(null=True, blank=True)
     feedback = models.TextField(default='')
     file = models.FileField(null=True, blank=True)
     marks_obtained = models.IntegerField(default = 0)
 
     def __str__(self):
-        return self.university_id
+        return self.name
 
 class Student(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

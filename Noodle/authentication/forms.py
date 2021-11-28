@@ -13,6 +13,7 @@ class StudentRegistrationForm(UserCreationForm):
         self.fields['first_name'].label = "First Name"
         self.fields['last_name'].label = "Last Name"
         self.fields['email'].label = "Email"
+        self.fields['roll_number'].label = "Roll Number"
         self.fields['password1'].label = "Password"
         self.fields['password2'].label = "Confirm Password"
         for fieldname in ['password1', 'password2']:
@@ -33,6 +34,11 @@ class StudentRegistrationForm(UserCreationForm):
                 'placeholder': 'Enter Email',
             }
         )
+        self.fields['roll_number'].widget.attrs.update(
+            {
+                'placeholder': 'Enter Roll Number',
+            }
+        )
 
         self.fields['password1'].widget.attrs.update(
             {
@@ -48,7 +54,7 @@ class StudentRegistrationForm(UserCreationForm):
     class Meta:
         model = User
 
-        fields = ['first_name', 'last_name', 'email', 'password1', 'password2']
+        fields = ['first_name', 'last_name', 'email', 'roll_number', 'password1', 'password2']
         error_messages = {
             'first_name': {
                 'required': 'First name is required',

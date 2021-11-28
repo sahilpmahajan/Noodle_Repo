@@ -126,12 +126,11 @@ class AssignmentCreateForm(forms.ModelForm):
 class AssignmentSubmissionForm(forms.ModelForm):
     class Meta:
         model = AssignmentSubmission
-        fields = ['name', 'university_id', 'content', 'file']
+        fields = ['name', 'content', 'file']
 
     def __init__(self, *args, **kwargs):
         super(AssignmentSubmissionForm, self).__init__(*args, **kwargs)
         self.fields['name'].label = " Name"
-        self.fields['university_id'].label = "University Id"
         self.fields['content'].label = "Answer"
         self.fields['file'].label = "Or Upload File"
 
@@ -141,11 +140,6 @@ class AssignmentSubmissionForm(forms.ModelForm):
             }
         )
 
-        self.fields['university_id'].widget.attrs.update(
-            {
-                'placeholder': 'Write Your Id',
-            }
-        )
 
         self.fields['content'].widget.attrs.update(
             {

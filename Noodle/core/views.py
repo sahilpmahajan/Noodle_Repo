@@ -225,11 +225,10 @@ def assignment_submit(request, id, pk):
     if(assignment_submission_is_valid(assignment.due_date)):
         if(request.method == 'POST'):
             name = request.user.first_name + ' ' + request.user.last_name
-            university_id = request.POST['university_id']
             content = request.POST['content']
             file = request.FILES['file']
             ass_sub = AssignmentSubmission.objects.create(
-                user=request.user, assignment=assignment, name=name, content=content, university_id=university_id, file=file)
+                user=request.user, assignment=assignment, name=name, content=content, file=file)
             ass_sub.save()
             email = request.user.email
             name = request.user.first_name
@@ -319,7 +318,7 @@ def upload_csv(request,id,pk):
                 
                 for x in csv_data:
                     fields = x.split(",")
-                    if item.university_id == fields[0]:
+                    if item.user.roll_number == fields[0]:
                         
                         item.marks_obtained = fields[1]
                         item.feedback = fields[2]
@@ -349,7 +348,7 @@ def assignment_chart(request,id,pk):
     assignmentsub_list = AssignmentSubmission.objects.filter(assignment = assignment)
     if(len(assignmentsub_list)!=0):
         for item in assignmentsub_list:
-            labels.append(item.university_id)
+            labels.append(item.user.roll_number)
             data.append(item.marks_obtained)
         average = sum(data)/len(data)
         labels.append("Average")

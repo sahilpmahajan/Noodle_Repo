@@ -17,7 +17,7 @@ class User(AbstractUser):
                               error_messages={
                                   'unique': "A user with that email already exists.",
                               })
-
+    roll_number = models.CharField(unique=True, blank=False, max_length=10)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
