@@ -6,7 +6,7 @@ from .models import *
 class CourseCreateForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['course_name',  'teacher_details', 'student_code','ta_code', 'end_date']
+        fields = ['course_name',  'teacher_details', 'student_code','ta_code','super_ta_code', 'end_date']
 
     def __init__(self, *args, **kwargs):
         super(CourseCreateForm, self).__init__(*args, **kwargs)
@@ -16,6 +16,7 @@ class CourseCreateForm(forms.ModelForm):
         self.fields['teacher_details'].label = "Course Details"
         self.fields['student_code'].label = "Student Code"
         self.fields['ta_code'].label = "TA Code"
+        self.fields['super_ta_code'].label = "Super TA Code"
         self.fields['end_date'].label = "End Date"
 
         self.fields['course_name'].widget.attrs.update(
@@ -50,6 +51,11 @@ class CourseCreateForm(forms.ModelForm):
         self.fields['ta_code'].widget.attrs.update(
             {
                 'placeholder': 'TA Code',
+            }
+        )
+        self.fields['super_ta_code'].widget.attrs.update(
+            {
+                'placeholder': 'Super TA Code',
             }
         )
 

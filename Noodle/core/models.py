@@ -11,6 +11,7 @@ class Course(models.Model):
     teacher_details = models.TextField()
     student_code = models.CharField(max_length=6)
     ta_code =models.CharField(max_length=6)
+    super_ta_code =models.CharField(max_length=6)
     created_at = models.DateField(default=timezone.now)
     #end_date = models.CharField(max_length=20)
     end_date = models.DateField(max_length=20)
@@ -50,6 +51,7 @@ class Student(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_ta = models.BooleanField()
+    is_super_ta = models.BooleanField()
 
 class CourseAssignment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

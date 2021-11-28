@@ -99,7 +99,9 @@
                     <hr/>
                     <br/>
                 {% endfor %}
-                
+                {% if is_super_ta == 1 %}
+                <a href="{% url 'core:assignment-create' id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Create Assignment</button></a>
+                {% endif %}
 
            
             {% endif %}

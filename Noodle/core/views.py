@@ -67,19 +67,6 @@ class CourseCreateView(CreateView):
 
 
 # # VIEW FOR COURSE LIST
-# class CourseView(ListView):
-#     model = Course
-#     template_name = 'core/instructor/courses.html'
-#     context_object_name = 'course'
-
-#     @method_decorator(login_required(login_url=reverse_lazy('authentication:login')))
-#     # @method_decorator(user_is_instructor, user_is_student)
-#     def dispatch(self, request, *args, **kwargs):
-#         return super().dispatch(self.request, *args, **kwargs)
-
-#     def get_queryset(self):
-#         return self.model.objects.all().order_by('-id')  # filter(user_id=self.request.user.id).order_by('-id')
-
 def view_courselist(request):
     if(request.user.role=='student'):
         user = User.objects.get(id=request.user.id)
@@ -101,9 +88,11 @@ def course_single(request, id):
     total = []
     complete = 0
     is_ta = 0
+    is_super_ta = 0
     students = Student.objects.filter(course = course, user=request.user)
     for item in students:
         is_ta = item.is_ta
+        is_super_ta = item.is_super_ta
     for user in course.student_set.all():
         if(request.user.email == user.user.email):
             is_registered = 1
@@ -115,11 +104,22 @@ def course_single(request, id):
                     submitted.append(assignment)
         complete = len(submitted)/len(total) * 100
         complete = str(round(complete, 2))
+    
+    if(request.user.role=='student' and is_ta == 0):
+        role = "Student"
+    elif(request.user.role=='student' and is_ta == 1 and is_super_ta == 0):
+        role = "Standard TA"
+    elif(request.user.role=='student' and is_ta == 1 and is_super_ta == 1):
+        role = "Super TA"
+    else:
+        role = "Instructor"
     return render(request, "core/instructor/view_course.html", {
         'course': course , 
         'is_registered': is_registered,
         'complete' : complete,
-        'is_ta': is_ta
+        'is_ta': is_ta,
+        'is_super_ta': is_super_ta,
+        'role': role
         })
 
 
@@ -129,11 +129,15 @@ def course_single_register(request, id):
     if(request.method == 'POST'):
         course_code = request.POST.get("course_code")
         if(str(course.student_code) == str(course_code)):
-            new_student = Student(course = course, user = request.user, is_ta = 0)
+            new_student = Student(course = course, user = request.user, is_ta = 0, is_super_ta = 0)
             new_student.save() 
             return render(request, "core/instructor/view_course.html", {'course': course})
         elif(str(course.ta_code) == str(course_code)):
-            new_student = Student(course = course, user = request.user, is_ta = 1)
+            new_student = Student(course = course, user = request.user, is_ta = 1 , is_super_ta = 0)
+            new_student.save() 
+            return render(request, "core/instructor/view_course.html", {'course': course})
+        elif(str(course.super_ta_code) == str(course_code)):
+            new_student = Student(course = course, user = request.user, is_ta = 1, is_super_ta = 1)
             new_student.save() 
             return render(request, "core/instructor/view_course.html", {'course': course})
     
@@ -181,9 +185,11 @@ def view_assignmentlist(request, id):
         id=id
         assignment_list = Assignment.objects.filter(course = course).order_by('due_date')
         is_ta = 0
+        is_super_ta = 0
         students = Student.objects.filter(course = course, user=request.user)
         for item in students:
             is_ta = item.is_ta
+            is_super_ta = item.is_super_ta
         if(request.user.role == 'student' and is_ta==0):
             submitted = []
             not_submitted = []
@@ -193,9 +199,9 @@ def view_assignmentlist(request, id):
                     else:
                         not_submitted.append(assignment)
         
-            return render(request, "core/instructor/assignments.html", {'not_submitted': not_submitted , 'id': id, 'submitted': submitted, 'is_ta': is_ta})
+            return render(request, "core/instructor/assignments.html", {'not_submitted': not_submitted , 'id': id, 'submitted': submitted, 'is_ta': is_ta, 'is_super_ta': is_super_ta})
         elif(request.user.role == 'instructor' or is_ta==1):
-            return render(request, "core/instructor/assignments.html", {'assignment': assignment_list , 'id': id, 'is_ta': is_ta})
+            return render(request, "core/instructor/assignments.html", {'assignment': assignment_list , 'id': id, 'is_ta': is_ta, 'is_super_ta': is_super_ta})
 
 # # DELETE ASSIGNMENT VIEW
 def delete_assignment(request,id):
