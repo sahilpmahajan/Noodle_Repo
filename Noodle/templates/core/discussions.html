@@ -12,13 +12,12 @@
                 {% for foo in discussion_list %}
                     <h3><strong> {{ foo.topic }}  </strong></h3>
                     <hr/> 
+                    <a href="http://127.0.0.1:8000/{{id}}/discussion/{{foo.id}}/comments"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Discussion</button></a>
                     <br/>
                 {% endfor %}
                 
 
             <a href="{% url 'core:discussion-create' id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Create discussion</button></a>
-            <a href="http://127.0.0.1:8000/{{id}}/discussion/{{foo.id}}/comments"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Discussion</button></a>
-
 
             {% else %}
 
