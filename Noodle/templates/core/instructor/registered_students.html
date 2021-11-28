@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Assignments{% endblock %}
+
+
+{% block content %}
+
+ 
+
+            <h3> Super TA's in Course: {{course.course_name}}</h3>
+            {% if request.user.is_authenticated and request.user.role == 'instructor' %}
+            <ul >
+                {% for foo in student_list %}
+                {% if foo.is_ta == 1 and foo.is_super_ta == 1 %}
+                     <li><h4>{{foo.user.roll_number }}: {{ foo.user.first_name}} {{foo.user.last_name }} </h4>
+                    <a href="deregister_student/{{foo.id}}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Deregister Super TA</button></a>
+
+
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <hr>
+            <h3> Normal TA's in Course: {{course.course_name}}</h3>
+            {% if request.user.is_authenticated and request.user.role == 'instructor' %}
+            <ul>
+                {% for foo in student_list %}
+                {% if foo.is_ta == 1 and foo.is_super_ta == 0 %}
+                     <li><h4>{{foo.user.roll_number }}: {{ foo.user.first_name}} {{foo.user.last_name }} </h4>
+                    <a href="deregister_student/{{foo.id}}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Deregister TA</button></a>
+
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <hr>
+            <h3> Registered Students in Course: {{course.course_name}}</h3>
+            {% if request.user.is_authenticated and request.user.role == 'instructor' %}
+            <ul>
+                {% for foo in student_list %}
+                {% if foo.is_ta == 0 %}
+                     <li><h4>{{foo.user.roll_number }}: {{ foo.user.first_name}} {{foo.user.last_name }} </h4>
+                    <a href="deregister_student/{{foo.id}}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Deregister Student</button></a>
+
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+    
+
+{% endblock %}

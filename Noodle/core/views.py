@@ -82,6 +82,11 @@ def view_courselist(request):
 # SINGLE COURSE VIEW
 def course_single(request, id):
     course = get_object_or_404(Course, id=id)
+    student = Student.objects.filter(course=course, user=request.user)
+    student_id = 0
+    for item in student:
+        print(item)
+        student_id = item.id
     id=id
     is_registered = 0
     submitted = []
@@ -119,7 +124,8 @@ def course_single(request, id):
         'complete' : complete,
         'is_ta': is_ta,
         'is_super_ta': is_super_ta,
-        'role': role
+        'role': role,
+        'student_id': student_id
         })
 
 
@@ -147,6 +153,19 @@ def get_student_list(id):#returns email id of students having course id 'id'
     course = get_object_or_404(Course, id=id)
     student_list = Student.objects.filter(course=course)
     return student_list
+
+# VIEW REGISTERED STUDENTS IN A COURSE
+def view_registered_students(request, id):
+    course = get_object_or_404(Course, id=id)
+    student_list = Student.objects.filter(course=course)
+    return render(request, "core/instructor/registered_students.html", {'course': course, 'student_list': student_list})
+
+#DEREGISTER STUDENT FROM COURSE
+def deregister_student(request,id,pk):
+
+    student = Student.objects.filter(pk=pk)
+    student.delete()
+    return redirect(f"http://127.0.0.1:8000/{id}/course-view/")
 
 
 # ASSIGNMENT CREATE VIEW
@@ -207,7 +226,6 @@ def view_assignmentlist(request, id):
 def delete_assignment(request,id):
 
     assign = Assignment.objects.filter(id=id)
-    #c_id = assign.course_id
     assign.delete()
     return redirect(f"http://127.0.0.1:8000/course")
 
