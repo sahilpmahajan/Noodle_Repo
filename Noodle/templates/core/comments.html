@@ -13,7 +13,7 @@
             {% for foo in comments_list %}
 
 
-                <p> <h4>Name</h4> {{ foo.user.first_name }} </p>
+                <p> <h4>Name</h4> {{ foo.user.first_name }} {{ foo.user.last_name }} </p>
 
                 <p> <h4>Comment</h4>{{ foo.content }} </p>
             

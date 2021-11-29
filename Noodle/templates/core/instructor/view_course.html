@@ -51,6 +51,9 @@
                 <a href="{% url 'core:assignment-list' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Assignments</button></a>
                 <a href="{% url 'core:discussion-list' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Discussions</button></a>
                 <br>
+                <a href="{% url 'core:change-course-code' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Change Course Code</button></a>
+                <a href="{% url 'core:add-student-course' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Add Student</button></a>
+                <a href="{% url 'core:remove-student-course' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Remove Student</button></a>
                 <a href="{% url 'core:registered-students' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Registered Students</button></a>
                 <hr>
                 <a href="{% url 'core:delete-course' course.id %}"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Delete Course</button></a>

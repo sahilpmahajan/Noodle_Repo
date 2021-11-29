@@ -63,6 +63,7 @@ class Post(models.Model):
     topic = models.TextField(null=True, blank=True)
     #user = models.ForeignKey(User, on_delete=models.CASCADE)
     time = models.DateTimeField(null=True)
+    notifs_students = models.TextField(default='')
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)

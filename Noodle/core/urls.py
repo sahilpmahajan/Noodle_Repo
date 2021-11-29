@@ -24,6 +24,7 @@ urlpatterns = [
                   path('<pk>/submission-delete/', delete_assignmentsubmission, name='submission-delete'),
                   path('<pk>/delete-course/', CourseDelete.as_view(), name='delete-course'),
                   path('<int:id>/assignment/<int:pk>/submitted-assignment/upload-csv', upload_csv, name='upload-csv'),
+                  path('<int:id>/assignment/<int:pk>/submitted-assignment/upload-autograder', autograder, name='upload-autograder'),
                   path('<int:id>/assignment/<int:pk>/submitted-assignment/assignment-chart', assignment_chart, name='assignment-chart'),
                   path('<int:id>/assignment/assignment-course-chart', assignment_course_average_chart, name='assignment-course-chart'),
                   path('<int:id>/assignment/course-total', course_total_chart, name='course-total'),
@@ -33,5 +34,9 @@ urlpatterns = [
                   path('<int:id>/discussion/<int:pk>/comment-create/', comment_create, name='comments-create'),
                   path('<int:id>/discussion/discussion-create/', discussion_create, name='discussion-create'),
                   path('failed/', invalid_submission, name='invalid-submission'),
+                  path('<int:id>/course/change-course-code/', change_course_code, name='change-course-code'),
+                  path('<int:id>/course/remove-course-student/', removefromcourse, name='remove-student-course'),
+                  path('<int:id>/course/add-course-student/', addtocourse, name='add-student-course'),
+                  path('<int:id>/course/<int:pk>/discussion-notif', getnotifs,name = 'discussion-notif'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

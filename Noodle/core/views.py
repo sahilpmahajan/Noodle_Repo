@@ -18,7 +18,15 @@ from django.template.loader import get_template
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.core.mail import EmailMultiAlternatives
-
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives
+from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
+import subprocess
+import os
+import argparse
+import re
+from shutil import copyfile
 
 class HomeView(ListView):
     paginate_by = 6
@@ -85,7 +93,6 @@ def course_single(request, id):
     student = Student.objects.filter(course=course, user=request.user)
     student_id = 0
     for item in student:
-        print(item)
         student_id = item.id
     id=id
     is_registered = 0
@@ -244,8 +251,6 @@ def assignment_submit(request, id, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
     # doubt number 1 : how to get date from assignment
     # doubt number 2 : do we need to add invalid submission in urls.py
-    print(assignment.title)
-    print('hello')
     if(assignment_submission_is_valid(assignment.due_date)):
         if(request.method == 'POST'):
             name = request.user.first_name + ' ' + request.user.last_name
@@ -516,19 +521,114 @@ def view_commentslist(request, id, pk):
                 #         return redirect('core:home')
                 return render(request, "core/comments.html", {'comments_list': comments_list, 'id': id, 'pk' : pk})
 
+def append_notifs(email, id, pk):
+    course = get_object_or_404(Course, id=id)
+    discussion = get_object_or_404(Post, pk=pk) #something else
+    str_notif = str(discussion.notifs_students) + ';' + str(email) 
+    discussion.notifs_students = str_notif
+    discussion.save()
+
+def remove_notifs(email, id, pk):
+    course = get_object_or_404(Course, id=id)
+    discussion = get_object_or_404(Post, pk=pk) #something else
+    str_notif = str(discussion.notifs_students) 
+    str_notif = str_notif.replace(';'+email, '', 100)
+    discussion.notifs_students = str_notif
+    discussion.save()
+
+def getnotifs_email(str_notifs):
+    l = []
+    i = 0
+    for j in range(len(str_notifs)):
+        if(str_notifs[j]==';'):
+            l.append(str_notifs[i:j])
+            i=j+1
+    l.append(str_notifs[i:])
+    l[0]=l[0][4:]
+    return l    
+
+def getnotifs(request, id, pk):
+    if(request.method == 'POST'):
+        value = request.POST['value']
+        if((value == 'y' or value == 'yes') or (value == 'YES' or value == 'Yes')):
+            email = request.user.email  
+            append_notifs(email, id, pk)         
+        elif((value == 'n' or value == 'no') or (value == 'NO' or value == 'No')):
+            email = request.user.email
+            remove_notifs(email,id,pk)
+        return redirect(f"http://127.0.0.1:8000/{id}/discussion")
+    return render(request, "core/notifs_yesno.html")
+
+@user_is_instructor
+def change_course_code(request, id):
+    course = get_object_or_404(Course, id=id)
+    if(request.method == 'POST'):
+        newcode = request.POST["new_code"]
+        course.student_code = newcode
+        course.save()
+        return render(request, "core/instructor/view_course.html", {'course': course})
+    return render(request, "core/instructor/change_course_code.html", {'course' : course, 'id' : id})
+
 def comment_create(request, id, pk):
     post = get_object_or_404(Post, pk=pk)
     id = id
     pk = pk
     time = timezone.localtime(timezone.now())
     if(request.method == 'POST'):
-            print('Avi in POST')
             content = request.POST.get('content', False)
             com = Comment.objects.create(
                 post = post, user=request.user, content=content, time = time)
             com.save()
+            ###############################################
+            discussion_name = post.topic
+            email_list = getnotifs_email(post.notifs_students)
+            for email in email_list:
+                htmly = get_template('core/discussion_notif_email.html')
+                d = { 'email':email, 'discussion_name': discussion_name }
+                subject, from_email, to = 'welcome', 'yashdahiya2002@gmail.com', email
+                html_content = htmly.render(d)
+                msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+            ###############################################
             return redirect(f"http://127.0.0.1:8000/{id}/discussion/{pk}/comments")
     return render(request, "core/create_comment.html", {'id':id, 'pk':pk})
+
+@user_is_instructor
+def removefromcourse(request, id):    
+    course = get_object_or_404(Course, id=id)
+    students = Student.objects.filter(course=course)
+    if(request.method == 'POST'):
+        roll_number = request.POST['roll_number']
+        for e in students:
+            if(e.user.roll_number == roll_number):
+                e.delete()
+                break
+        return render(request, "core/instructor/view_course.html", {'course': course})
+    return render(request, "core/instructor/email_student_enter.html", {'course' : course, 'id' : id})
+
+@user_is_instructor
+def addtocourse(request, id):    
+    User = get_user_model()
+    users = User.objects.all()
+    course = get_object_or_404(Course, id=id)
+    if(request.method == 'POST'):
+        roll_number = request.POST['roll_number']
+        for e in users:
+            if(e.roll_number == roll_number and e.role == 'student'):
+                new_student = Student(course=course, user = e, is_ta = 0, is_super_ta=0)
+                new_student.save()
+                break
+        return render(request, "core/instructor/view_course.html", {'course': course})
+    return render(request, "core/instructor/email_student_enter.html", {'course' : course, 'id' : id})
+
+def get_email_id(id):#returns email id of students having course id 'id'
+    course = get_object_or_404(Course, id=id)
+    student_list = Student.objects.filter(course=course)
+    email_list = []
+    for e in student_list:
+        email_list.append(e.user.email)
+    return email_list
 
 def view_discussionlist(request, id):
     # user = User.objects.get(id=request.user.id)
@@ -546,3 +646,77 @@ def discussion_create(request, id):
         post.save()
         return redirect(f"http://127.0.0.1:8000/{id}/discussion")
     return render(request, "core/instructor/discussion_create.html")
+
+
+
+############################## AUTOGRADER SCRIPT #########################################
+
+def compile(code):
+    try:
+        proc = subprocess.run(['g++', '-w', f'{code}', '-o', 'myexec'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              timeout=5)
+    except subprocess.TimeoutExpired:
+        print("compile time exceeded")
+        exit(1)
+    output = proc.stdout.decode()
+    errors = proc.stderr.decode()
+    assert output == '', "compilation error"
+    assert errors == '', "compilation error"
+
+
+def run_compiled(input_file, tle):
+    copyfile(input_file, 'input.txt')
+    out_file = open(f'out.out', 'w+')
+    try:
+        subprocess.run(['./myexec'], stdout=out_file, stderr=out_file, timeout=tle)
+    except subprocess.TimeoutExpired:
+        print("Time limit Exceeded")
+        exit(1)
+    out_file.close()
+
+
+def diff_checker(output_file):
+    out_file = open(f'out.out')
+    test_output = out_file.read()
+    expected_output = open(f'{output_file}').read()
+
+    test_output = re.sub(r'\s+', ' ', test_output).strip()
+    expected_output = re.sub(r'\s+', ' ', expected_output).strip()
+    # considers just spaces between everything while comparing
+
+    if test_output == expected_output:
+        print("All test passed")
+    else:
+        print("failed")
+    try:
+        os.remove('input.txt')
+        os.remove('out.out')
+        os.remove('myexec')
+    except:
+        pass
+
+
+def autograder(request,id,pk):
+    if request.method == "POST":
+        input_file = request.FILES["input_upload"]
+        output_file = request.FILES["output_upload"]
+        #code: assignment submission file 
+        assignment = get_object_or_404(Assignment, pk=pk)
+        assignmentsub_list = AssignmentSubmission.objects.filter(assignment = assignment)
+        for item in assignmentsub_list:
+            code = item.file.name
+        tle = 10
+        assert os.path.splitext(code)[1] == '.cpp', 'not a .cpp file'
+        assert os.path.isfile(code), 'invalid code path/directory'
+        assert os.path.isfile(input_file), 'invalid input path/directory'
+        assert os.path.isfile(output_file), 'invalid output path/directory'
+
+        compile(code)
+        run_compiled(input_file, tle)
+        diff_checker(output_file)
+        return redirect(f"http://127.0.0.1:8000/{id}/assignment/{pk}/submitted-assignment")
+
+    form = AutograderImportForm()
+    data = {"form": form}
+    return render(request, "core/autograder_upload.html", data)
+

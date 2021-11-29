@@ -31,18 +31,21 @@
                 
                 {% if request.user.is_authenticated and request.user.role == 'instructor' %}
                 <a href="submitted-assignment/{{foo.id}}/assignment-feedback"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Give/Edit Feedback</button></a>
+
                 {% endif %}
                 {% if request.user.is_authenticated and request.user.role == 'student' and is_ta == 1 %}
                 <a href="submitted-assignment/{{foo.id}}/assignment-feedback"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Give/Edit Feedback</button></a>
+
                 {% endif %}
                 <hr/>
             {% endfor %}   
                 {% if request.user.is_authenticated and request.user.role == 'instructor' %}
                 <a href="submitted-assignment/upload-csv"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Give Feedback via CSV</button></a>
+                <a href="submitted-assignment/upload-autograder"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Autograde Submissions</button></a>
                 {% endif %}
                 {% if request.user.is_authenticated and request.user.role == 'student' and is_ta == 1 %}
                 <a href="submitted-assignment/upload-csv"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Give Feedback via CSV</button></a>
-                
+                <a href="submitted-assignment/upload-autograder"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">Autograde Submissions</button></a>
                 
                 {% endif %}
                 <a href="submitted-assignment/assignment-chart"><button class="w3-button w3-black w3-margin-bottom" onclick="document.getElementById('ticketModal').style.display='block'">View Assignment Statistics</button></a>

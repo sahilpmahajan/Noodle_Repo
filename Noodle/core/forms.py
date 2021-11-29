@@ -176,3 +176,7 @@ class AssignmentSubmissionForm(forms.ModelForm):
 
 class CsvImportForm(forms.Form):
     csv_upload = forms.FileField()
+
+class AutograderImportForm(forms.Form):
+    input_upload = forms.FileField()
+    output_upload = forms.FileField()
